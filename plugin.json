@@ -1,5 +1,5 @@
 {
-    "name": "Feedback Widget",
+    "name": "User Interview App",
     "config": [
         {
             "markdown": "## MANUAL STEP NOTICE: This app needs to injects code into your website through posthog-js. You need to **opt-in** on your site to enable this behaviour.\n\n```\nposthog.init(\"api_key\", {\n  \"api_host\": \"https://app.posthog.com\",\n  \"opt_in_site_apps\": true,\n})\n```"
@@ -13,104 +13,76 @@
             "site": true
         },
         {
-            "key": "selector",
-            "name": "Selector",
-            "hint": "CSS selector to activate on. For example: \"#my-feedback-button\" or \"[data-attr='posthog-feedback-button']\"",
+            "key": "invitationTitle",
+            "name": "Invitation Title",
             "type": "string",
-            "default": "",
+            "default": "Invitation to User Interview with PostHog",
             "site": true
         },
         {
-            "key": "useButton",
-            "name": "Show feedback button on the page",
-            "hint": "Alternatively, any click on an element with the selector [data-attr='posthog-feedback-button'] will open the feedback widget",
-            "type": "choice",
-            "choices": ["Yes", "No"],
-            "default": "Yes",
-            "required": false,
-            "site": true
-        },
-        {
-            "key": "buttonText",
-            "name": "Button text",
+            "key": "bookButtonText",
+            "name": "Book Button Text",
             "type": "string",
-            "default": "✉️",
+            "default": "Find a time here",
             "required": true,
             "site": true
         },
         {
-            "key": "buttonTitle",
-            "name": "Button title",
-            "hint": "The text that appears when you hover over the button",
+            "key": "bookButtonURL",
+            "name": "Book Button URL",
             "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "buttonBackground",
-            "name": "Button background",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "buttonColor",
-            "name": "Button text color",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "placeholderText",
-            "name": "Placeholder text",
-            "type": "string",
-            "default": "Help us improve",
-            "site": true
-        },
-        {
-            "key": "sendButtonText",
-            "name": "Send button text",
-            "type": "string",
-            "default": "Send Feedback",
+            "default": "https://calendly.com/posthog-luke-harries/user-interview-product-analytics",
             "required": true,
             "site": true
         },
         {
-            "key": "cancelButtonText",
-            "name": "Cancel button text",
+            "key": "closeButtonText",
+            "name": "Close button text",
             "type": "string",
-            "default": "Cancel",
-            "site": true
-        },
-        {
-            "key": "thanksText",
-            "name": "Thank you text",
-            "type": "string",
-            "default": "Thank you! Closing in 3 seconds...",
-            "required": true,
+            "default": "Close",
             "site": true
         },
         {
             "key": "footerHTML",
             "name": "Footer HTML",
-            "hint": "HTML to show in the footer of the feedback widget. For example: \"More questions? <a href='https://posthog.com/questions'>Ask us anything</a>\"",
+            "hint": "HTML to show in the footer of the invitation widget. For example: \"More questions? <a href='https://posthog.com/questions'>Ask us anything</a>\"",
             "type": "string",
-            "default": "<strong class='bolded'>Have a specific issue?</strong> Contact support directly!",
+            "default": "<strong class='bolded'>Learn more about why we do user interviews here INSERT URL",
             "site": true
         },
         {
-            "key": "eventName",
-            "name": "Feedback event's event name",
+            "key": "shownUserInterviewPopupEvent",
+            "name": "Shown user interview popup event name",
             "type": "string",
-            "default": "Feedback Sent",
-            "required": true,
+            "default": "User Interview Shown Pop Up",
             "site": true
         },
         {
-            "key": "feedbackProperty",
-            "name": "Feedback event's feedback property",
+            "key": "dismissUserInterviewPopupEvent",
+            "name": "Dismissed user interview popup event name",
             "type": "string",
-            "default": "$feedback",
+            "default": "User Interview Dismissed Pop Up",
+            "site": true
+        },
+        {
+            "key": "clickBookButtonEvent",
+            "name": "Click book button event name",
+            "type": "string",
+            "default": "User Interview Clicked Book Button",
+            "site": true
+        },
+        {
+            "key": "bookedUserInterviewEvent",
+            "name": "Booked user interview event name",
+            "type": "string",
+            "default": "User Interview Booked",
+            "site": true
+        },
+        {
+            "key": "featureFlagName",
+            "name": "Feature flag name",
+            "type": "string",
+            "default": "user-interview",
             "required": true,
             "site": true
         }
