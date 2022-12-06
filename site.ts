@@ -158,7 +158,7 @@ export function inject({ config, posthog }) {
         const urlParams = new URLSearchParams(window.location.search)
         const bookedUserInterview = urlParams.get('bookedUserInterview')
         if (bookedUserInterview) {
-            posthog.capture('bookedUserInterview', { featureFlagName: bookedUserInterview })
+            posthog.capture(config.bookedUserInterview, { featureFlagName: bookedUserInterview })
         }
     }
 
@@ -193,7 +193,7 @@ export function inject({ config, posthog }) {
     shadow.addEventListener('click', (e) => {
         // @ts-ignore
         if (e.target.classList.contains('popup-close-button')) {
-            posthog.capture(config.closedUserInterviewPopupEvent)
+            posthog.capture(config.dismissUserInterviewPopupEvent)
             shadow.innerHTML = ''
             localStorage.setItem(sessionStorageName, 'true')
             // @ts-ignore
