@@ -1,23 +1,212 @@
-<div class="popup">
-    <div class="popup-shadow"></div>
-    <div class="popup-container">
-        <div class="popup-title">${config.invitationTitle}</div>
-        <div class="popup-body">
-            Book in a call here:
-            <a href="${config.bookButtonURL}" target="_blank">here!</a>
-            <div class="calendly-inline-widget" style="min-width: 320px; height: 580px" data-auto-load="false"></div>
-            <div class="popup-actions">
-                <button class="popup-close-button">${config.closeButtonText}</button>
+<!DOCTYPE html>
+<header>
+    <script>
+        !(function (t, e) {
+            var o, n, p, r
+            e.__SV ||
+                ((window.posthog = e),
+                (e._i = []),
+                (e.init = function (i, s, a) {
+                    function g(t, e) {
+                        var o = e.split('.')
+                        2 == o.length && ((t = t[o[0]]), (e = o[1])),
+                            (t[e] = function () {
+                                t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+                            })
+                    }
+                    ;((p = t.createElement('script')).type = 'text/javascript'),
+                        (p.async = !0),
+                        (p.src = s.api_host + '/static/array.js'),
+                        (r = t.getElementsByTagName('script')[0]).parentNode.insertBefore(p, r)
+                    var u = e
+                    for (
+                        void 0 !== a ? (u = e[a] = []) : (a = 'posthog'),
+                            u.people = u.people || [],
+                            u.toString = function (t) {
+                                var e = 'posthog'
+                                return 'posthog' !== a && (e += '.' + a), t || (e += ' (stub)'), e
+                            },
+                            u.people.toString = function () {
+                                return u.toString(1) + '.people (stub)'
+                            },
+                            o =
+                                'capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags'.split(
+                                    ' '
+                                ),
+                            n = 0;
+                        n < o.length;
+                        n++
+                    )
+                        g(u, o[n])
+                    e._i.push([i, s, a])
+                }),
+                (e.__SV = 1))
+        })(document, window.posthog || [])
+        posthog.init('phc_JXWdVwkMR8fn5BWvi6DLEwuemrGmTuUXAOA8mDihEvj', {
+            api_host: 'http://localhost:8000',
+            opt_in_site_apps: true,
+        })
+    </script>
+    <style>
+        .popup,
+        .button,
+        .thanks {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: black;
+            font-weight: normal;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            text-align: left;
+            z-index: 999999;
+        }
+        .button {
+            width: 64px;
+            height: 64px;
+            border-radius: 100%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 32px;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            filter: brightness(1.2);
+        }
+        .thanks {
+            background: white;
+        }
+        .popup {
+            display: none;
+            flex-direction: column;
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding-top: 5px;
+            width: 380px;
+            box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%),
+                -12px 0 48px 16px rgb(0 0 0 / 3%);
+        }
+        .popup .userinterview-invitation {
+            color: #2d2d2d;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            margin-bottom: 10px;
+            background: white;
+            color: black;
+            border: none;
+            outline: none;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 10px;
+            height: 150px;
+        }
+        .popup-book-button {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: inherit;
+            overflow: visible;
+            text-transform: none;
+            line-height: 1.5715;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            user-select: none;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 4px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            outline: 0;
+            color: #fff;
+            border-color: #1d4aff;
+            background: #1d4aff;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+        }
+        .popup-book-button:hover {
+            filter: brightness(1.2);
+        }
+        .popup-close-button {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: inherit;
+            overflow: visible;
+            text-transform: none;
+            line-height: 1.5715;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            user-select: none;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 4px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            color: #2d2d2d;
+            border-color: rgba(0, 0, 0, 0.15);
+            background: #fff;
+            outline: 0;
+        }
+        .bolded {
+            font-weight: 600;
+        }
+        .bottom-section {
+            border-top: 1px solid #f0f0f0;
+            padding: 10px 16px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .invitation-title {
+            font-family: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol;
+            color: #2d2d2d;
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-align: left;
+        }
+        /* popup-body with padding */
+        .invitation-body {
+            font-family: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol;
+            color: #2d2d2d;
+            font-size: 0.875rem;
+            font-weight: 400;
+            text-align: left;
+            padding-top: 10px;
+        }
+    </style>
+</header>
+<body>
+    <div class="popup" style="display: flex">
+        <div class="userinterview-invitation">
+            <h2 class="invitation-title">${config.invitationTitle}</h2>
+            <p class="invitation-body">${config.invitationBody}</p>
+        </div>
+        <div class="bottom-section">
+            <div class="buttons">
+                <button class="popup-close-button" type="button" onclick="window.open('${config.bookButtonURL}')">
+                    ${config.closeButtonText}
+                </button>
                 <button class="popup-book-button" onclick="window.open('${config.bookButtonURL}')">
                     ${config.bookButtonText}
                 </button>
             </div>
-            <div
-                class="calendly-inline-widget"
-                data-url="https://calendly.com/posthog-luke-harries/user-interview-product-analytics?hide_event_type_details=1&hide_gdpr_banner=1"
-                style="min-width: 320px; height: 630px"
-            ></div>
-            <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
         </div>
     </div>
-</div>
+</body>

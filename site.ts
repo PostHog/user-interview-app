@@ -1,111 +1,146 @@
 const style = /* css */ `
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    color: black;
-    font-weight: normal;
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    text-align: left;
-    z-index: 999999;
-}
-/* display: none; */
-.popup-shadow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 100;
-    /* display: none; */
-}
-.popup-container {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    width: 500px;
-    /* translate 50% */
-    transform: translate(-50%, -50%);
-    background: #fff;
-    z-index: 101;
-    /* padding */
-    padding: 20px;
-    /* display: none; */
-}
-/* popup-title */
-.popup-title {
-    font-family: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol;
-    color: #2d2d2d;
-    font-size: 1.125rem;
-    font-weight: 700;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    line-height: 50px;
-    text-align: left;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-    padding: 0 5px;
-}
-/* popup-body with padding */
-.popup-body {
-    top: 50px;
-    left: 0;
-    width: 100%;
-    height: 250px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-    padding: 20px 5px;
-}
-.popup-actions {
-    width: 100%;
-    /* flex container columns */
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    /* space between 5px */
-    gap: 10px;
-    /* top padding 10px */
-    padding-top: 20px;
-}
-/* position popup-button in right of popup-actions using flex */
-.popup-book-button {
-    height: 32px;
-    color: #fff;
-    border-color: #1d4aff;
-    background: #1d4aff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
-    font-weight: 400;
-    border: 1px solid transparent;
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-    padding: 4px 15px;
-    font-size: 14px;
-    border-radius: 4px;
-    outline: 0;
-}
-.popup-close-button {
-    box-sizing: border-box;
-    height: 32px;
-    justify-content: flex-end;
-    color: #1d4aff;
-    border: #1d4aff 1px solid;
-    background: transparent;
-    font-weight: 400;
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-    padding: 4px 15px;
-    font-size: 14px;
-    border-radius: 4px;
-}
+        .popup,
+        .button,
+        .thanks {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: black;
+            font-weight: normal;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            text-align: left;
+            z-index: 999999;
+        }
+        .button {
+            width: 64px;
+            height: 64px;
+            border-radius: 100%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 32px;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            filter: brightness(1.2);
+        }
+        .thanks {
+            background: white;
+        }
+        .popup {
+            display: none;
+            flex-direction: column;
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding-top: 5px;
+            width: 380px;
+            box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%),
+                -12px 0 48px 16px rgb(0 0 0 / 3%);
+        }
+        .popup .userinterview-invitation {
+            color: #2d2d2d;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            margin-bottom: 10px;
+            background: white;
+            color: black;
+            border: none;
+            outline: none;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 10px;
+        }
+        .popup-book-button {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: inherit;
+            overflow: visible;
+            text-transform: none;
+            line-height: 1.5715;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            user-select: none;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 4px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            outline: 0;
+            color: #fff;
+            border-color: #1d4aff;
+            background: #1d4aff;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+        }
+        .popup-book-button:hover {
+            filter: brightness(1.2);
+        }
+        .popup-close-button {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: inherit;
+            overflow: visible;
+            text-transform: none;
+            line-height: 1.5715;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            user-select: none;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 4px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            color: #2d2d2d;
+            border-color: rgba(0, 0, 0, 0.15);
+            background: #fff;
+            outline: 0;
+        }
+        .bolded {
+            font-weight: 600;
+        }
+        .bottom-section {
+            border-top: 1px solid #f0f0f0;
+            padding: 10px 0px;
+            height: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .invitation-title {
+            font-family: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol;
+            color: #2d2d2d;
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-align: left;
+            margin-top: 0;
+        }
+        /* popup-body with padding */
+        .invitation-body {
+            font-family: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif,
+                'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol;
+            color: #2d2d2d;
+            font-size: 0.875rem;
+            font-weight: 400;
+            text-align: left;
+        }
 `
 
 export function inject({ config, posthog }) {
@@ -134,19 +169,19 @@ export function inject({ config, posthog }) {
     function createPopUp() {
         posthog.capture(config.shownUserInterviewPopupEvent)
         const popupHTML = /*html*/ `
-        <div class="popup">
-            <div class="popup-shadow"></div>
-            <div class="popup-container">
-                <div class="popup-title">${config.invitationTitle}</div>
-                <div class="popup-body">
-                    Book in a call here:
-                    <a href="${config.bookButtonURL}" target="_blank">here!</a>
-                </div>
-                <div class="popup-actions">
-                    <button class="popup-close-button">${config.closeButtonText}</button>
-                    <button class="popup-book-button" onclick="window.open('${config.bookButtonURL}')"
-                        >${config.bookButtonText}</button
-                    >
+        <div class="popup" style="display: flex">
+            <div class="userinterview-invitation">
+                <h2 class="invitation-title">${config.invitationTitle}</h2>
+                <div class="invitation-body">${config.invitationBody}</p>
+            </div>
+            <div class="bottom-section">
+                <div class="buttons">
+                    <button class="popup-close-button" type="button">
+                        ${config.closeButtonText}
+                    </button>
+                    <button class="popup-book-button" onclick="window.open('${config.bookButtonURL}')">
+                        ${config.bookButtonText}
+                    </button>
                 </div>
             </div>
         </div>`
@@ -161,6 +196,7 @@ export function inject({ config, posthog }) {
 
     // if popup-close-button then remove popup
     shadow.addEventListener('click', (e) => {
+        // @ts-ignore
         if (e.target.classList.contains('popup-close-button')) {
             posthog.capture(config.closedUserInterviewPopupEvent)
             shadow.innerHTML = ''
@@ -169,6 +205,7 @@ export function inject({ config, posthog }) {
 
     // if popup-book-button then remove popup
     shadow.addEventListener('click', (e) => {
+        // @ts-ignore
         if (e.target.classList.contains('popup-book-button')) {
             posthog.capture(config.clickBookButtonEvent)
             shadow.innerHTML = ''
@@ -194,6 +231,3 @@ function createShadow(style: string): ShadowRoot {
     document.body.appendChild(div)
     return shadow
 }
-
-// Next steps:
-// Add in support for multiple feature flags and links
