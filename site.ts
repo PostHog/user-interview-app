@@ -144,8 +144,6 @@ const style = /* css */ `
 `
 
 export function inject({ config, posthog }) {
-    console.log('user interview config', config)
-    console.log('loaded user interview site app')
     if (config.domains) {
         const domains = config.domains.split(',').map((domain) => domain.trim())
         if (domains.length > 0 && domains.indexOf(window.location.hostname) === -1) {
