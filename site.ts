@@ -189,9 +189,6 @@ export function inject({ config, posthog }) {
             innerHTML: popupHTML,
         })
         shadow.appendChild(popup)
-
-        // save popup shown in storage
-        localStorage.setItem(sessionStorageName, 'true')
     }
 
     // if popup-close-button then remove popup
@@ -200,15 +197,12 @@ export function inject({ config, posthog }) {
         if (e.target.classList.contains('popup-close-button')) {
             posthog.capture(config.closedUserInterviewPopupEvent)
             shadow.innerHTML = ''
-        }
-    })
-
-    // if popup-book-button then remove popup
-    shadow.addEventListener('click', (e) => {
-        // @ts-ignore
-        if (e.target.classList.contains('popup-book-button')) {
+            localStorage.setItem(sessionStorageName, 'true')
+            // @ts-ignore
+        } else if (e.target.classList.contains('popup-book-button')) {
             posthog.capture(config.clickBookButtonEvent)
             shadow.innerHTML = ''
+            localStorage.setItem(sessionStorageName, 'true')
         }
     })
 
