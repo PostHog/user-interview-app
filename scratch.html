@@ -1,0 +1,23 @@
+<div class="popup">
+    <div class="popup-shadow"></div>
+    <div class="popup-container">
+        <div class="popup-title">${config.invitationTitle}</div>
+        <div class="popup-body">
+            Book in a call here:
+            <a href="${config.bookButtonURL}" target="_blank">here!</a>
+            <div class="calendly-inline-widget" style="min-width: 320px; height: 580px" data-auto-load="false"></div>
+            <div class="popup-actions">
+                <button class="popup-close-button">${config.closeButtonText}</button>
+                <button class="popup-book-button" onclick="window.open('${config.bookButtonURL}')">
+                    ${config.bookButtonText}
+                </button>
+            </div>
+            <div
+                class="calendly-inline-widget"
+                data-url="https://calendly.com/posthog-luke-harries/user-interview-product-analytics?hide_event_type_details=1&hide_gdpr_banner=1"
+                style="min-width: 320px; height: 630px"
+            ></div>
+            <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+        </div>
+    </div>
+</div>
