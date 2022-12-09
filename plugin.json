@@ -92,6 +92,14 @@
             "default": "user-interview",
             "required": true,
             "site": true
+        },
+        {
+            "key": "userPropertyNameSeenUserInterview",
+            "name": "Name of the User Property for seeing a popup",
+            "type": "string",
+            "default": "Seen User Interview Invitation",
+            "required": true,
+            "site": true
         }
     ]
 }

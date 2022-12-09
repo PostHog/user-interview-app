@@ -193,12 +193,17 @@ export function inject({ config, posthog }) {
     shadow.addEventListener('click', (e) => {
         // @ts-ignore
         if (e.target.classList.contains('popup-close-button')) {
-            posthog.capture(config.dismissUserInterviewPopupEvent)
+            posthog.capture(config.dismissUserInterviewPopupEvent, {
+                $set: { [config.userPropertyNameSeenUserInterview]: new Date().toISOString() },
+            })
+
             shadow.innerHTML = ''
             localStorage.setItem(sessionStorageName, 'true')
             // @ts-ignore
         } else if (e.target.classList.contains('popup-book-button')) {
-            posthog.capture(config.clickBookButtonEvent)
+            posthog.capture(config.clickBookButtonEvent, {
+                $set: { [config.userPropertyNameSeenUserInterview]: new Date().toISOString() },
+            })
             shadow.innerHTML = ''
             localStorage.setItem(sessionStorageName, 'true')
         }
