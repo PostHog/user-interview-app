@@ -234,7 +234,9 @@ export function inject({ config, posthog }) {
             // @ts-ignore
             if (e.target.classList.contains('popup-close-button')) {
                 posthog.capture(config.dismissUserInterviewPopupEvent, {
-                    $set: { [config.userPropertyNameSeenUserInterview]: new Date().toISOString() },
+                    $set: {
+                        [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                    },
                     featureFlagName: featureFlagName,
                 })
 
@@ -243,7 +245,9 @@ export function inject({ config, posthog }) {
                 // @ts-ignore
             } else if (e.target.classList.contains('popup-book-button')) {
                 posthog.capture(config.clickBookButtonEvent, {
-                    $set: { [config.userPropertyNameSeenUserInterview]: new Date().toISOString() },
+                    $set: {
+                        [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                    },
                     featureFlagName: featureFlagName,
                 })
                 shadow.innerHTML = ''
@@ -266,14 +270,14 @@ export function inject({ config, posthog }) {
         }
     })
 
-    posthog.onFeatureFlags((flags: string[]) => {
+    posthog.onFeatureFlags((flags) => {
         interviewConfigs.forEach((interviewConfig: { featureFlagName: string; bookButtonURL: string }) => {
-            const flagFound = true // flags.includes(interviewConfig.featureFlagName)
-            const notSeenFlagBefore = !localStorage.getItem(
+            const flagFound = flags.includes(config.featureFlagName)
+            const flagNotShownBefore = !localStorage.getItem(
                 getFeatureSessionStorageKey(interviewConfig.featureFlagName)
             )
 
-            if (flagFound && notSeenFlagBefore) {
+            if (flagFound && flagNotShownBefore) {
                 createPopUp(interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
                 return // only show one popup
             }
