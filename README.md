@@ -16,7 +16,7 @@ Invite your users to an interview through an in-app pop-up with this app.
 1. Create a feature flag to control who sees it. And set the filter `Seen User Interview Invitation` to `is not set` so that it doesn't show to users who have seen the user interview already.
    ![Feature flag user interview not set](feature-flag-config.png)
 2. Add the feature flag to the app config `featureFlagNames` (you can have multiple feature flags by separating them with commas e.g. interview_high_icp,interview_used_two_feature_flags)
-3. Add the booking links to the app config `bookButtonURLs` (you can have multiple booking links by separating them with commas e.g. https://calendly.com/user1/book,https://calendly.com/user2/15min)
+3. Add the booking links to the app config `bookButtonURLs` (you can have multiple booking links by separating them with commas e.g. https://calendly.com/user1/book,https://calendly.com/user2/15min). The first booking link will correspond to the first feature flags and so on.
 4. Rollout out the feature flag
 
 The flags won't be shown to users who have seen a popup within the last 90 days (configured with `minDaysSinceLastSeenPopUp`)
