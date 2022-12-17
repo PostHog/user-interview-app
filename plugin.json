@@ -35,8 +35,8 @@
             "site": true
         },
         {
-            "key": "bookButtonURL",
-            "name": "Book Button URL",
+            "key": "bookButtonURLs",
+            "name": "Book Button URLs",
             "type": "string",
             "default": "https://calendly.com/posthog-luke-harries/user-interview-product-analytics",
             "required": true,
@@ -86,8 +86,8 @@
             "site": true
         },
         {
-            "key": "featureFlagName",
-            "name": "Feature flag name",
+            "key": "featureFlagNames",
+            "name": "Feature flag names",
             "type": "string",
             "default": "user-interview",
             "required": true,
@@ -98,6 +98,14 @@
             "name": "Name of the User Property for seeing a popup",
             "type": "string",
             "default": "Seen User Interview Invitation",
+            "required": true,
+            "site": true
+        },
+        {
+            "key": "minDaysSinceLastSeenPopUp",
+            "name": "Minimum number of days since they've last seen a popup",
+            "type": "number",
+            "default": 90,
             "required": true,
             "site": true
         }
