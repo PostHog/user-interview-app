@@ -170,7 +170,6 @@ function getFeatureSessionStorageKey(featureFlagName: string) {
     return `ph-${featureFlagName}-${user_interview_popup_shown}`
 }
 
-// function two dates are more than 90 days apart
 function dateDiffFromToday(date: string) {
     const today = new Date()
     const diff = Math.abs(today.getTime() - new Date(date).getTime())
@@ -186,6 +185,8 @@ export function inject({ config, posthog }) {
         }
     }
 
+    detectBookedInterview(posthog, config.bookedUserInterviewEvent)
+
     const lastPopupLongEnoughAgo =
         localStorage.getItem(user_interview_popup_shown) &&
         dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) > config.minDaysSinceLastSeenPopUp
@@ -194,11 +195,9 @@ export function inject({ config, posthog }) {
 
     const shadow = createShadowDOM(style)
 
-    detectBookedInterview(posthog, config.bookedUserInterviewEvent)
-
     function createPopUp(bookButtonURL, featureFlagName) {
         if (!bookButtonURL) {
-            console.log('No book button URL provided')
+            console.error('No book button URL provided')
             return
         }
 
@@ -254,21 +253,12 @@ export function inject({ config, posthog }) {
                 localStorage.setItem(sessionStorageName, 'true')
             }
 
-            // set the date that the last popup was shown
+            // update the date that the last popup was shown
             localStorage.setItem(user_interview_popup_shown, new Date().toISOString())
         })
     }
 
-    const configFeatureFlags = config.featureFlagNames.split(',').map((flag) => flag.trim())
-    const configBookingURLs = config.bookButtonURLs.split(',').map((url) => url.trim())
-
-    // zip the feature flags and the booking urls together
-    const interviewConfigs = configFeatureFlags.map((flag, index) => {
-        return {
-            featureFlagName: flag,
-            bookButtonURL: configBookingURLs[index],
-        }
-    })
+    const interviewConfigs = makeInterviewConfigs(config)
 
     posthog.onFeatureFlags((flags) => {
         interviewConfigs.forEach((interviewConfig: { featureFlagName: string; bookButtonURL: string }) => {
@@ -283,4 +273,17 @@ export function inject({ config, posthog }) {
             }
         })
     })
+}
+function makeInterviewConfigs(config: any) {
+    const configFeatureFlags = config.featureFlagNames.split(',').map((flag) => flag.trim())
+    const configBookingURLs = config.bookButtonURLs.split(',').map((url) => url.trim())
+
+    // zip the feature flags and the booking urls together
+    const interviewConfigs = configFeatureFlags.map((flag, index) => {
+        return {
+            featureFlagName: flag,
+            bookButtonURL: configBookingURLs[index],
+        }
+    })
+    return interviewConfigs
 }
