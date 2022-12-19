@@ -143,6 +143,40 @@ const style = /* css */ `
         }
 `
 
+function createShadowDOM(style: string): ShadowRoot {
+    const div = document.createElement('div')
+    const shadow = div.attachShadow({ mode: 'open' })
+    if (style) {
+        const styleElement = Object.assign(document.createElement('style'), {
+            innerText: style,
+        })
+        shadow.appendChild(styleElement)
+    }
+    document.body.appendChild(div)
+    return shadow
+}
+
+function detectBookedInterview(posthog, bookedUserInterviewEventName: string) {
+    const urlParams = new URLSearchParams(window.location.search)
+    const featureFlagName = urlParams.get('bookedUserInterview')
+    if (featureFlagName) {
+        posthog.capture(bookedUserInterviewEventName, { featureFlagName: featureFlagName })
+    }
+}
+
+const user_interview_popup_shown = 'user_interview_popup_shown'
+
+function getFeatureSessionStorageKey(featureFlagName: string) {
+    return `ph-${featureFlagName}-${user_interview_popup_shown}`
+}
+
+function dateDiffFromToday(date: string) {
+    const today = new Date()
+    const diff = Math.abs(today.getTime() - new Date(date).getTime())
+    const diffDays = Math.ceil(diff / (1000 * 3600 * 24))
+    return diffDays
+}
+
 export function inject({ config, posthog }) {
     if (config.domains) {
         const domains = config.domains.split(',').map((domain) => domain.trim())
@@ -150,22 +184,26 @@ export function inject({ config, posthog }) {
             return
         }
     }
-    const shadow = createShadow(style)
 
-    const sessionStorageName = `${config.featureFlagName}-popupshown`
+    detectBookedInterview(posthog, config.bookedUserInterviewEvent)
 
-    function detectBookedInterview() {
-        const urlParams = new URLSearchParams(window.location.search)
-        const bookedUserInterview = urlParams.get('bookedUserInterview')
-        if (bookedUserInterview) {
-            posthog.capture(config.bookedUserInterview, { featureFlagName: bookedUserInterview })
+    const lastPopupLongEnoughAgo =
+        localStorage.getItem(user_interview_popup_shown) &&
+        dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) > config.minDaysSinceLastSeenPopUp
+
+    if (!lastPopupLongEnoughAgo) return
+
+    const shadow = createShadowDOM(style)
+
+    function createPopUp(bookButtonURL, featureFlagName) {
+        if (!bookButtonURL) {
+            console.error('No book button URL provided')
+            return
         }
-    }
 
-    detectBookedInterview()
-
-    function createPopUp() {
-        posthog.capture(config.shownUserInterviewPopupEvent)
+        posthog.capture(config.shownUserInterviewPopupEvent, {
+            featureFlagName: featureFlagName,
+        })
         const popupHTML = /*html*/ `
         <div class="popup" style="display: flex">
             <div class="userinterview-invitation">
@@ -177,7 +215,7 @@ export function inject({ config, posthog }) {
                     <button class="popup-close-button" type="button">
                         ${config.closeButtonText}
                     </button>
-                    <button class="popup-book-button" onclick="window.open('${config.bookButtonURL}')">
+                    <button class="popup-book-button" onclick="window.open('${bookButtonURL}')">
                         ${config.bookButtonText}
                     </button>
                 </div>
@@ -187,44 +225,65 @@ export function inject({ config, posthog }) {
             innerHTML: popupHTML,
         })
         shadow.appendChild(popup)
+
+        const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
+
+        // if popup-close-button then remove popup
+        shadow.addEventListener('click', (e) => {
+            // @ts-ignore
+            if (e.target.classList.contains('popup-close-button')) {
+                posthog.capture(config.dismissUserInterviewPopupEvent, {
+                    $set: {
+                        [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                    },
+                    featureFlagName: featureFlagName,
+                })
+
+                shadow.innerHTML = ''
+                localStorage.setItem(sessionStorageName, 'true')
+                // @ts-ignore
+            } else if (e.target.classList.contains('popup-book-button')) {
+                posthog.capture(config.clickBookButtonEvent, {
+                    $set: {
+                        [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                    },
+                    featureFlagName: featureFlagName,
+                })
+                shadow.innerHTML = ''
+                localStorage.setItem(sessionStorageName, 'true')
+            }
+
+            // update the date that the last popup was shown
+            localStorage.setItem(user_interview_popup_shown, new Date().toISOString())
+        })
     }
 
-    // if popup-close-button then remove popup
-    shadow.addEventListener('click', (e) => {
-        // @ts-ignore
-        if (e.target.classList.contains('popup-close-button')) {
-            posthog.capture(config.dismissUserInterviewPopupEvent, {
-                $set: { [config.userPropertyNameSeenUserInterview]: new Date().toISOString() },
-            })
-
-            shadow.innerHTML = ''
-            localStorage.setItem(sessionStorageName, 'true')
-            // @ts-ignore
-        } else if (e.target.classList.contains('popup-book-button')) {
-            posthog.capture(config.clickBookButtonEvent, {
-                $set: { [config.userPropertyNameSeenUserInterview]: new Date().toISOString() },
-            })
-            shadow.innerHTML = ''
-            localStorage.setItem(sessionStorageName, 'true')
-        }
-    })
+    const interviewConfigs = makeInterviewConfigs(config)
 
     posthog.onFeatureFlags((flags) => {
-        if (flags.includes(config.featureFlagName) && !localStorage.getItem(sessionStorageName)) {
-            createPopUp()
-        }
+        interviewConfigs.forEach((interviewConfig: { featureFlagName: string; bookButtonURL: string }) => {
+            const flagFound = flags.includes(config.featureFlagName)
+            const flagNotShownBefore = !localStorage.getItem(
+                getFeatureSessionStorageKey(interviewConfig.featureFlagName)
+            )
+
+            if (flagFound && flagNotShownBefore) {
+                createPopUp(interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
+                return // only show one popup
+            }
+        })
     })
 }
+function makeInterviewConfigs(config: any) {
+    const configFeatureFlags = config.featureFlagNames.split(',').map((flag) => flag.trim())
+    const configBookingURLs = config.bookButtonURLs.split(',').map((url) => url.trim())
 
-function createShadow(style: string): ShadowRoot {
-    const div = document.createElement('div')
-    const shadow = div.attachShadow({ mode: 'open' })
-    if (style) {
-        const styleElement = Object.assign(document.createElement('style'), {
-            innerText: style,
-        })
-        shadow.appendChild(styleElement)
-    }
-    document.body.appendChild(div)
-    return shadow
+    // zip the feature flags and the booking urls together
+    const interviewConfigs = configFeatureFlags.map((flag, index) => {
+        return {
+            featureFlagName: flag,
+            bookButtonURL: configBookingURLs[index],
+        }
+    })
+    return interviewConfigs
 }
