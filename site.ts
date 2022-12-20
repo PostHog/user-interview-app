@@ -262,7 +262,7 @@ export function inject({ config, posthog }) {
 
     posthog.onFeatureFlags((flags) => {
         interviewConfigs.forEach((interviewConfig: { featureFlagName: string; bookButtonURL: string }) => {
-            const flagFound = flags.includes(config.featureFlagName)
+            const flagFound = flags.includes(interviewConfig.featureFlagName)
             const flagNotShownBefore = !localStorage.getItem(
                 getFeatureSessionStorageKey(interviewConfig.featureFlagName)
             )
