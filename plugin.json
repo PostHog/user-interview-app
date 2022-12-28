@@ -86,10 +86,10 @@
             "site": true
         },
         {
-            "key": "featureFlagNames",
-            "name": "Feature flag names",
+            "key": "featureFlagsAndLinks",
+            "name": "Feature flag and links, separated by >>",
             "type": "string",
-            "default": "user-interview",
+            "default": "user-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>user-pipeline=https://calendly.com/posthog-luke-harries/user-interview-pipeline",
             "required": true,
             "site": true
         },
