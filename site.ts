@@ -293,11 +293,11 @@ export function inject({ config, posthog }) {
 
 // example: product-analytics-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>pipeline-interview=https://calendly.com/posthog-luke-harries/user-interview-pipeline
 function getInterviewConfigs(rawInterviewConfigs: string): InterviewConfig[] {
-    const featureFlagsAndLinks = rawInterviewConfigs.split('>>').map((flagAndLink) => {
+    const interviewConfigs = rawInterviewConfigs.split('>>').map((flagAndLink) => {
         return {
             featureFlagName: flagAndLink.split('=')[0],
             bookButtonURL: flagAndLink.split('=')[1],
         }
     })
-    return featureFlagsAndLinks
+    return interviewConfigs
 }
