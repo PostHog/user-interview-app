@@ -1,3 +1,7 @@
+const DEBUG_SKIP_LAST_SEEN = false
+const DEBUG_SKIP_FEATURE_FLAG = false
+const DEBUG_SKIP_POPUP_INDEX = 0
+
 const style = /* css */ `
         .popup,
         .button,
@@ -143,6 +147,11 @@ const style = /* css */ `
         }
 `
 
+type InterviewConfig = {
+    featureFlagName: string
+    bookButtonURL: string
+}
+
 function createShadowDOM(style: string): ShadowRoot {
     const div = document.createElement('div')
     const shadow = div.attachShadow({ mode: 'open' })
@@ -177,6 +186,69 @@ function dateDiffFromToday(date: string) {
     return diffDays
 }
 
+function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
+    if (!bookButtonURL) {
+        console.error('No book button URL provided')
+        return
+    }
+
+    posthog.capture(config.shownUserInterviewPopupEvent, {
+        featureFlagName: featureFlagName,
+    })
+    const popupHTML = /*html*/ `
+    <div class="popup" style="display: flex">
+        <div class="userinterview-invitation">
+            <h2 class="invitation-title">${config.invitationTitle}</h2>
+            <div class="invitation-body">${config.invitationBody}</p>
+        </div>
+        <div class="bottom-section">
+            <div class="buttons">
+                <button class="popup-close-button" type="button">
+                    ${config.closeButtonText}
+                </button>
+                <button class="popup-book-button" onclick="window.open('${bookButtonURL}')">
+                    ${config.bookButtonText}
+                </button>
+            </div>
+        </div>
+    </div>`
+    const popup = Object.assign(document.createElement('div'), {
+        innerHTML: popupHTML,
+    })
+    shadow.appendChild(popup)
+
+    const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
+
+    // if popup-close-button then remove popup
+    shadow.addEventListener('click', (e) => {
+        // @ts-ignore
+        if (e.target.classList.contains('popup-close-button')) {
+            posthog.capture(config.dismissUserInterviewPopupEvent, {
+                $set: {
+                    [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                },
+                featureFlagName: featureFlagName,
+            })
+
+            shadow.innerHTML = ''
+            localStorage.setItem(sessionStorageName, 'true')
+            // @ts-ignore
+        } else if (e.target.classList.contains('popup-book-button')) {
+            posthog.capture(config.clickBookButtonEvent, {
+                $set: {
+                    [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                },
+                featureFlagName: featureFlagName,
+            })
+            shadow.innerHTML = ''
+            localStorage.setItem(sessionStorageName, 'true')
+        }
+
+        // update the date that the last popup was shown
+        localStorage.setItem(user_interview_popup_shown, new Date().toISOString())
+    })
+}
+
 export function inject({ config, posthog }) {
     if (config.domains) {
         const domains = config.domains.split(',').map((domain) => domain.trim())
@@ -191,98 +263,40 @@ export function inject({ config, posthog }) {
         localStorage.getItem(user_interview_popup_shown) &&
         dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) > config.minDaysSinceLastSeenPopUp
 
-    if (!lastPopupLongEnoughAgo) return
+    if (!DEBUG_SKIP_LAST_SEEN && !lastPopupLongEnoughAgo) return
 
     const shadow = createShadowDOM(style)
 
-    function createPopUp(bookButtonURL, featureFlagName) {
-        if (!bookButtonURL) {
-            console.error('No book button URL provided')
-            return
-        }
+    const interviewConfigs = getInterviewConfigs(config.interviewConfigs)
 
-        posthog.capture(config.shownUserInterviewPopupEvent, {
-            featureFlagName: featureFlagName,
-        })
-        const popupHTML = /*html*/ `
-        <div class="popup" style="display: flex">
-            <div class="userinterview-invitation">
-                <h2 class="invitation-title">${config.invitationTitle}</h2>
-                <div class="invitation-body">${config.invitationBody}</p>
-            </div>
-            <div class="bottom-section">
-                <div class="buttons">
-                    <button class="popup-close-button" type="button">
-                        ${config.closeButtonText}
-                    </button>
-                    <button class="popup-book-button" onclick="window.open('${bookButtonURL}')">
-                        ${config.bookButtonText}
-                    </button>
-                </div>
-            </div>
-        </div>`
-        const popup = Object.assign(document.createElement('div'), {
-            innerHTML: popupHTML,
-        })
-        shadow.appendChild(popup)
-
-        const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
-
-        // if popup-close-button then remove popup
-        shadow.addEventListener('click', (e) => {
-            // @ts-ignore
-            if (e.target.classList.contains('popup-close-button')) {
-                posthog.capture(config.dismissUserInterviewPopupEvent, {
-                    $set: {
-                        [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
-                    },
-                    featureFlagName: featureFlagName,
-                })
-
-                shadow.innerHTML = ''
-                localStorage.setItem(sessionStorageName, 'true')
-                // @ts-ignore
-            } else if (e.target.classList.contains('popup-book-button')) {
-                posthog.capture(config.clickBookButtonEvent, {
-                    $set: {
-                        [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
-                    },
-                    featureFlagName: featureFlagName,
-                })
-                shadow.innerHTML = ''
-                localStorage.setItem(sessionStorageName, 'true')
-            }
-
-            // update the date that the last popup was shown
-            localStorage.setItem(user_interview_popup_shown, new Date().toISOString())
-        })
+    // if DEBUG_SKIP_FEATURE_FLAG then show the popup for the first feature flag
+    if (DEBUG_SKIP_FEATURE_FLAG) {
+        const interviewConfig = interviewConfigs[DEBUG_SKIP_POPUP_INDEX]
+        createPopUp(posthog, config, shadow, interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
+        return
     }
 
-    const interviewConfigs = makeInterviewConfigs(config)
-
     posthog.onFeatureFlags((flags) => {
-        interviewConfigs.forEach((interviewConfig: { featureFlagName: string; bookButtonURL: string }) => {
+        interviewConfigs.forEach((interviewConfig: InterviewConfig) => {
             const flagFound = flags.includes(interviewConfig.featureFlagName)
             const flagNotShownBefore = !localStorage.getItem(
                 getFeatureSessionStorageKey(interviewConfig.featureFlagName)
             )
 
             if (flagFound && flagNotShownBefore) {
-                createPopUp(interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
+                createPopUp(posthog, config, shadow, interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
                 return // only show one popup
             }
         })
     })
 }
-function makeInterviewConfigs(config: any) {
-    const configFeatureFlags = config.featureFlagNames.split(',').map((flag) => flag.trim())
-    const configBookingURLs = config.bookButtonURLs.split(',').map((url) => url.trim())
 
-    // zip the feature flags and the booking urls together
-    const interviewConfigs = configFeatureFlags.map((flag, index) => {
+// example: product-analytics-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>pipeline-interview=https://calendly.com/posthog-luke-harries/user-interview-pipeline
+function getInterviewConfigs(rawInterviewConfigs: string): InterviewConfig[] {
+    const interviewConfigs = rawInterviewConfigs.split('>>').map((flagAndLink) => {
         return {
-            featureFlagName: flag,
-            bookButtonURL: configBookingURLs[index],
+            featureFlagName: flagAndLink.split('=')[0],
+            bookButtonURL: flagAndLink.split('=')[1],
         }
     })
     return interviewConfigs
