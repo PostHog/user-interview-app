@@ -267,7 +267,7 @@ export function inject({ config, posthog }) {
 
     const shadow = createShadowDOM(style)
 
-    const interviewConfigs = getInterviewConfigs(config.featureFlagsAndLinks)
+    const interviewConfigs = getInterviewConfigs(config.interviewConfigs)
 
     // if DEBUG_SKIP_FEATURE_FLAG then show the popup for the first feature flag
     if (DEBUG_SKIP_FEATURE_FLAG) {
@@ -292,8 +292,8 @@ export function inject({ config, posthog }) {
 }
 
 // example: product-analytics-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>pipeline-interview=https://calendly.com/posthog-luke-harries/user-interview-pipeline
-function getInterviewConfigs(rawFeatureFlagsAndLinks: string): InterviewConfig[] {
-    const featureFlagsAndLinks = rawFeatureFlagsAndLinks.split('>>').map((flagAndLink) => {
+function getInterviewConfigs(rawInterviewConfigs: string): InterviewConfig[] {
+    const featureFlagsAndLinks = rawInterviewConfigs.split('>>').map((flagAndLink) => {
         return {
             featureFlagName: flagAndLink.split('=')[0],
             bookButtonURL: flagAndLink.split('=')[1],
