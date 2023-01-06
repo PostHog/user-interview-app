@@ -2,6 +2,10 @@ const DEBUG_SKIP_LAST_SEEN = false
 const DEBUG_SKIP_FEATURE_FLAG = false
 const DEBUG_SKIP_POPUP_INDEX = 0
 
+if (DEBUG_SKIP_LAST_SEEN || DEBUG_SKIP_FEATURE_FLAG) {
+    console.warn('User interview app running in Debug mode')
+}
+
 const style = /* css */ `
         .popup,
         .button,
