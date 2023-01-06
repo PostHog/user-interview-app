@@ -264,8 +264,9 @@ export function inject({ config, posthog }) {
     detectBookedInterview(posthog, config.bookedUserInterviewEvent)
 
     const lastPopupLongEnoughAgo =
-        localStorage.getItem(user_interview_popup_shown) &&
-        dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) > parseInt(config.minDaysSinceLastSeenPopUp)
+        !localStorage.getItem(user_interview_popup_shown) ||
+        dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) >=
+            parseInt(config.minDaysSinceLastSeenPopUp)
 
     if (!DEBUG_SKIP_LAST_SEEN && !lastPopupLongEnoughAgo) return
 
