@@ -20,6 +20,14 @@
             "site": true
         },
         {
+            "key": "interviewConfigs",
+            "name": "Interview configs separated by commas. e.g. FEATURE_FLAG=BOOKING_LINK,FEATURE_FLAG_2=BOOKING_LINK_2",
+            "type": "string",
+            "default": "user-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics,user-pipeline=https://calendly.com/posthog-luke-harries/user-interview-pipeline",
+            "required": true,
+            "site": true
+        },
+        {
             "key": "invitationBody",
             "name": "Invitation Body",
             "type": "string",
@@ -31,14 +39,6 @@
             "name": "Book Button Text",
             "type": "string",
             "default": "Book now",
-            "required": true,
-            "site": true
-        },
-        {
-            "key": "bookButtonURLs",
-            "name": "Book Button URLs",
-            "type": "string",
-            "default": "https://calendly.com/posthog-luke-harries/user-interview-product-analytics",
             "required": true,
             "site": true
         },
@@ -86,14 +86,6 @@
             "site": true
         },
         {
-            "key": "interviewConfigs",
-            "name": "Interview configs. e.g. FEATURE_FLAG=BOOKING_LINK>>FEATURE_FLAG_2=BOOKING_LINK_2",
-            "type": "string",
-            "default": "user-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>user-pipeline=https://calendly.com/posthog-luke-harries/user-interview-pipeline",
-            "required": true,
-            "site": true
-        },
-        {
             "key": "userPropertyNameSeenUserInterview",
             "name": "Name of the User Property for seeing a popup",
             "type": "string",
@@ -104,8 +96,8 @@
         {
             "key": "minDaysSinceLastSeenPopUp",
             "name": "Minimum number of days since they've last seen a popup",
-            "type": "number",
-            "default": 90,
+            "type": "string",
+            "default": "90",
             "required": true,
             "site": true
         }

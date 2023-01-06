@@ -261,7 +261,7 @@ export function inject({ config, posthog }) {
 
     const lastPopupLongEnoughAgo =
         localStorage.getItem(user_interview_popup_shown) &&
-        dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) > config.minDaysSinceLastSeenPopUp
+        dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) > parseInt(config.minDaysSinceLastSeenPopUp)
 
     if (!DEBUG_SKIP_LAST_SEEN && !lastPopupLongEnoughAgo) return
 
@@ -293,10 +293,10 @@ export function inject({ config, posthog }) {
 
 // example: product-analytics-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>pipeline-interview=https://calendly.com/posthog-luke-harries/user-interview-pipeline
 function getInterviewConfigs(rawInterviewConfigs: string): InterviewConfig[] {
-    const interviewConfigs = rawInterviewConfigs.split('>>').map((flagAndLink) => {
+    const interviewConfigs = rawInterviewConfigs.split(',').map((flagAndLink) => {
         return {
-            featureFlagName: flagAndLink.split('=')[0],
-            bookButtonURL: flagAndLink.split('=')[1],
+            featureFlagName: flagAndLink.split('=')[0].trim(),
+            bookButtonURL: flagAndLink.split('=')[1].trim(),
         }
     })
     return interviewConfigs
