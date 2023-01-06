@@ -6,7 +6,7 @@ Invite your users to an interview through an in-app pop-up with this app.
 
 1. Make sure you have enabled `opt_in_site_apps: true` in your posthog-js config.
 2. Install the app from the PostHog App Repository
-3. Customize the text
+3. Customize the text and theme using the app config
 
 ## Adding a user interview
 
