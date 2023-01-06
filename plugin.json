@@ -79,13 +79,6 @@
             "site": true
         },
         {
-            "key": "bookedUserInterviewEvent",
-            "name": "Booked user interview event name",
-            "type": "string",
-            "default": "User Interview Booked",
-            "site": true
-        },
-        {
             "key": "userPropertyNameSeenUserInterview",
             "name": "Name of the User Property for seeing a popup",
             "type": "string",

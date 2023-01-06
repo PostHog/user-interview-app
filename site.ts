@@ -169,6 +169,7 @@ function createShadowDOM(style: string): ShadowRoot {
     return shadow
 }
 
+// This doesn't work currently
 function detectBookedInterview(posthog, bookedUserInterviewEventName: string) {
     const urlParams = new URLSearchParams(window.location.search)
     const featureFlagName = urlParams.get('bookedUserInterview')
@@ -260,8 +261,6 @@ export function inject({ config, posthog }) {
             return
         }
     }
-
-    detectBookedInterview(posthog, config.bookedUserInterviewEvent)
 
     const lastPopupLongEnoughAgo =
         !localStorage.getItem(user_interview_popup_shown) ||
