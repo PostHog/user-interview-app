@@ -11,7 +11,10 @@ Invite your users to an interview through an in-app pop-up with this app.
 ## Adding a user interview
 
 1. Create a feature flag to control who sees it. For this example, we'll use the name `user-interview`
-   1. Set up the filters for the people that you want to speak to (e.g. they have @posthog.com in their email, they have paid at least $5k etc.). The filters can only be on a user's properties, not the events. If you want to invite users based on them doing certain actions you'll need to update the users property in the app once they've done that action.
+   1. Set up the filters for the people that you want to speak to (e.g. they have @posthog.com in their email, they have paid at least $5k etc.).
+      - The filters can only be on a user's properties, not the events.
+      - If you want to invite users based on historical actions, create an insight for that action and then use that to create a static cohort.
+      - If you want to invite users based on them doing certain actions you'll need to update the users property in the app once they've done that action.
    2. Set the filter `Seen User Interview Invitation - {featureFlagName}` to `is not set` so that it doesn't show to users who have seen the user interview already. (This property will be added once the user has interacted with the popup - either to close it or to book in a time)
       ![Feature flag user interview not set](feature-flag-config.png)
    3. Add an autorollback based on the pageview where `Current URL` contains `bookedUserInterviewEvent={FEATURE_FLAG_NAME}`. This is where you'll redirect them after they've booked in. Set the average over last 7 days to be 1 for up to 7 interviews to be booked and 2 for up to 14 interviews to be booked.
