@@ -280,18 +280,16 @@ export function inject({ config, posthog }) {
         return
     }
 
-    posthog.onFeatureFlags((flags) => {
-        interviewConfigs.forEach((interviewConfig: InterviewConfig) => {
-            const flagFound = flags.includes(interviewConfig.featureFlagName)
-            const flagNotShownBefore = !localStorage.getItem(
-                getFeatureSessionStorageKey(interviewConfig.featureFlagName)
-            )
+    interviewConfigs.every((interviewConfig: InterviewConfig) => {
+        const flagEnabled = posthog.isFeatureEnabled(interviewConfig.featureFlagName)
+        const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(interviewConfig.featureFlagName))
 
-            if (flagFound && flagNotShownBefore) {
-                createPopUp(posthog, config, shadow, interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
-                return // only show one popup
-            }
-        })
+        if (flagEnabled && flagNotShownBefore) {
+            createPopUp(posthog, config, shadow, interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
+            return false // break out of the loop
+        }
+
+        return true // continue the loop
     })
 }
 
