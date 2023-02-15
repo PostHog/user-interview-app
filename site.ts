@@ -1,6 +1,5 @@
 const DEBUG_SKIP_LAST_SEEN = false
 const DEBUG_SKIP_FEATURE_FLAG = false
-const DEBUG_SKIP_POPUP_INDEX = 0
 
 if (DEBUG_SKIP_LAST_SEEN || DEBUG_SKIP_FEATURE_FLAG) {
     console.warn('User interview app running in Debug mode')
@@ -190,7 +189,13 @@ function dateDiffFromToday(date: string): number {
     return diffDays
 }
 
-function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButtonURL: string, featureFlagName: string) {
+function createPopUp(
+    posthog: PostHog,
+    config: Config,
+    shadow: ShadowRoot,
+    bookButtonURL: string,
+    featureFlagName: string
+) {
     if (!bookButtonURL) {
         console.error('No book button URL provided')
         return
@@ -224,13 +229,12 @@ function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButto
 
     const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
 
-    shadow.addEventListener('click', (e: any) => {
-        // @ts-ignore
+    shadow.addEventListener('click', (e: MouseEvent) => {
         let event
-        if (e.target.classList.contains('popup-close-button')) {
+        const targetElement = e.target as Element
+        if (targetElement.classList.contains('popup-close-button')) {
             event = config.dismissUserInterviewPopupEvent
-            // @ts-ignore
-        } else if (e.target.classList.contains('popup-book-button')) {
+        } else if (targetElement.classList.contains('popup-book-button')) {
             event = config.clickBookButtonEvent
         } else {
             return
