@@ -271,35 +271,26 @@ export function inject({ config, posthog }) {
 
     const shadow = createShadowDOM(style)
 
-    const interviewConfigs = getInterviewConfigs(config.interviewConfigs)
-
     // if DEBUG_SKIP_FEATURE_FLAG then show the popup for the first feature flag
     if (DEBUG_SKIP_FEATURE_FLAG) {
-        const interviewConfig = interviewConfigs[DEBUG_SKIP_POPUP_INDEX]
-        createPopUp(posthog, config, shadow, interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
+        createPopUp(posthog, config, shadow, 'https://calendly.com/example', 'Example Feature Flag')
         return
     }
 
-    interviewConfigs.every((interviewConfig: InterviewConfig) => {
-        const flagEnabled = posthog.isFeatureEnabled(interviewConfig.featureFlagName)
-        const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(interviewConfig.featureFlagName))
-
-        if (flagEnabled && flagNotShownBefore) {
-            createPopUp(posthog, config, shadow, interviewConfig.bookButtonURL, interviewConfig.featureFlagName)
-            return false // break out of the loop
-        }
-
-        return true // continue the loop
-    })
-}
-
-// example: product-analytics-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics>>pipeline-interview=https://calendly.com/posthog-luke-harries/user-interview-pipeline
-function getInterviewConfigs(rawInterviewConfigs: string): InterviewConfig[] {
-    const interviewConfigs = rawInterviewConfigs.split(',').map((flagAndLink) => {
-        return {
-            featureFlagName: flagAndLink.split('=')[0].trim(),
-            bookButtonURL: flagAndLink.split('=')[1].trim(),
+    posthog.onFeatureFlags((flags) => {
+        for (const flagName of flags) {
+            const flagStartsWithKeyword = flagName.startsWith(config.flagStartsWith)
+            const flagEnabled = posthog.isFeatureEnabled(flagName)
+            const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(flagName))
+            if (
+                flagStartsWithKeyword
+                && flagEnabled
+                && flagNotShownBefore
+            ) {
+                const payload = posthog.getFeatureFlagPayload(flagName)
+                createPopUp(posthog, config, shadow, payload.bookingLink, flagName)
+                return
+            }
         }
     })
-    return interviewConfigs
 }

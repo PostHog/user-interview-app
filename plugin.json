@@ -20,14 +20,6 @@
             "site": true
         },
         {
-            "key": "interviewConfigs",
-            "name": "Interview configs separated by commas. e.g. FEATURE_FLAG=BOOKING_LINK,FEATURE_FLAG_2=BOOKING_LINK_2",
-            "type": "string",
-            "default": "user-interview=https://calendly.com/posthog-luke-harries/user-interview-product-analytics,user-pipeline=https://calendly.com/posthog-luke-harries/user-interview-pipeline",
-            "required": true,
-            "site": true
-        },
-        {
             "key": "invitationBody",
             "name": "Invitation Body",
             "type": "string",
@@ -91,6 +83,14 @@
             "name": "Minimum number of days since they've last seen a popup",
             "type": "string",
             "default": "90",
+            "required": true,
+            "site": true
+        },
+        {
+            "key": "flagStartsWith",
+            "name": "The text that the feature flag key must start with to trigger the popup",
+            "type": "string",
+            "default": "interview-",
             "required": true,
             "site": true
         }
