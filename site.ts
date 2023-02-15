@@ -6,6 +6,21 @@ if (DEBUG_SKIP_LAST_SEEN || DEBUG_SKIP_FEATURE_FLAG) {
     console.warn('User interview app running in Debug mode')
 }
 
+type Config = {
+    domains: string
+    invitationTitle: string
+    invitationBody: string
+    bookButtonText: string
+    closeButtonText: string
+    footerHTML: string
+    shownUserInterviewPopupEvent: string
+    dismissUserInterviewPopupEvent: string
+    clickBookButtonEvent: string
+    userPropertyNameSeenUserInterview: string
+    minDaysSinceLastSeenPopUp: string
+    flagStartsWith: string
+}
+
 const style = /* css */ `
         .popup,
         .button,
@@ -164,18 +179,18 @@ function createShadowDOM(style: string): ShadowRoot {
     return shadow
 }
 
-function getFeatureSessionStorageKey(featureFlagName: string) {
+function getFeatureSessionStorageKey(featureFlagName: string): string {
     return `ph-${featureFlagName}`
 }
 
-function dateDiffFromToday(date: string) {
+function dateDiffFromToday(date: string): number {
     const today = new Date()
     const diff = Math.abs(today.getTime() - new Date(date).getTime())
     const diffDays = Math.ceil(diff / (1000 * 3600 * 24))
     return diffDays
 }
 
-function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
+function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButtonURL: string, featureFlagName: string) {
     if (!bookButtonURL) {
         console.error('No book button URL provided')
         return
@@ -209,7 +224,7 @@ function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
 
     const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
 
-    shadow.addEventListener('click', (e) => {
+    shadow.addEventListener('click', (e: any) => {
         // @ts-ignore
         let event
         if (e.target.classList.contains('popup-close-button')) {
@@ -237,7 +252,7 @@ function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
     })
 }
 
-export function inject({ config, posthog }) {
+export function inject({ config, posthog }: { config: Config; posthog: any }) {
     if (config.domains) {
         const domains = config.domains.split(',').map((domain) => domain.trim())
         if (domains.length > 0 && domains.indexOf(window.location.hostname) === -1) {
