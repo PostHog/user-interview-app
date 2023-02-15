@@ -88,7 +88,7 @@
         },
         {
             "key": "flagStartsWith",
-            "name": "The text that the feature flag key must start with to trigger the popup",
+            "name": "Flag key must start with the following text to trigger the popup",
             "type": "string",
             "default": "interview-",
             "required": true,
