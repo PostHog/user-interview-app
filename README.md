@@ -48,7 +48,8 @@ The flags won't be shown to users who have seen a user interview popup within th
 
 | Property name | Notes |
 | ------------- | ----------- |
-| `Seen User Interview Invitation - featureFlagName}` | Date when the user interview invitation was shown |
+| `Seen User Interview Invitation - {featureFlagName}` | Date when the user interview invitation was shown |
+| `Seen User Interview Invitation` | Date when any user interview invitation was last shown |
 
 ## Local development
 
