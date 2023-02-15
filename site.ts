@@ -189,13 +189,7 @@ function dateDiffFromToday(date: string): number {
     return diffDays
 }
 
-function createPopUp(
-    posthog: PostHog,
-    config: Config,
-    shadow: ShadowRoot,
-    bookButtonURL: string,
-    featureFlagName: string
-) {
+function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButtonURL: string, featureFlagName: string) {
     if (!bookButtonURL) {
         console.error('No book button URL provided')
         return
