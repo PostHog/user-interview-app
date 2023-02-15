@@ -90,7 +90,7 @@
             "key": "flagStartsWith",
             "name": "The text that the feature flag key must start with to trigger the popup",
             "type": "string",
-            "default": "user-interview",
+            "default": "interview-",
             "required": true,
             "site": true
         }

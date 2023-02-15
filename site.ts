@@ -279,11 +279,11 @@ export function inject({ config, posthog }) {
 
     posthog.onFeatureFlags((flags) => {
         for (const flagName of flags) {
-            const flagStartsWithKeyWord = flagName.startsWith(config.flagStartsWith)
+            const flagStartsWithKeyword = flagName.startsWith(config.flagStartsWith)
             const flagEnabled = posthog.isFeatureEnabled(flagName)
             const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(flagName))
             if (
-                flagStartsWithKeyWord
+                flagStartsWithKeyword
                 && flagEnabled
                 && flagNotShownBefore
             ) {
