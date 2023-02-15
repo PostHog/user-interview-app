@@ -1,9 +1,23 @@
 const DEBUG_SKIP_LAST_SEEN = false
 const DEBUG_SKIP_FEATURE_FLAG = false
-const DEBUG_SKIP_POPUP_INDEX = 0
 
 if (DEBUG_SKIP_LAST_SEEN || DEBUG_SKIP_FEATURE_FLAG) {
     console.warn('User interview app running in Debug mode')
+}
+
+type Config = {
+    domains: string
+    invitationTitle: string
+    invitationBody: string
+    bookButtonText: string
+    closeButtonText: string
+    footerHTML: string
+    shownUserInterviewPopupEvent: string
+    dismissUserInterviewPopupEvent: string
+    clickBookButtonEvent: string
+    userPropertyNameSeenUserInterview: string
+    minDaysSinceLastSeenPopUp: string
+    flagStartsWith: string
 }
 
 const style = /* css */ `
@@ -151,11 +165,6 @@ const style = /* css */ `
         }
 `
 
-type InterviewConfig = {
-    featureFlagName: string
-    bookButtonURL: string
-}
-
 function createShadowDOM(style: string): ShadowRoot {
     const div = document.createElement('div')
     const shadow = div.attachShadow({ mode: 'open' })
@@ -169,29 +178,18 @@ function createShadowDOM(style: string): ShadowRoot {
     return shadow
 }
 
-// This doesn't work currently
-function detectBookedInterview(posthog, bookedUserInterviewEventName: string) {
-    const urlParams = new URLSearchParams(window.location.search)
-    const featureFlagName = urlParams.get('bookedUserInterview')
-    if (featureFlagName) {
-        posthog.capture(bookedUserInterviewEventName, { featureFlagName: featureFlagName })
-    }
+function getFeatureSessionStorageKey(featureFlagName: string): string {
+    return `ph-${featureFlagName}`
 }
 
-const user_interview_popup_shown = 'user_interview_popup_shown'
-
-function getFeatureSessionStorageKey(featureFlagName: string) {
-    return `ph-${featureFlagName}-${user_interview_popup_shown}`
-}
-
-function dateDiffFromToday(date: string) {
+function dateDiffFromToday(date: string): number {
     const today = new Date()
     const diff = Math.abs(today.getTime() - new Date(date).getTime())
     const diffDays = Math.ceil(diff / (1000 * 3600 * 24))
     return diffDays
 }
 
-function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
+function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButtonURL: string, featureFlagName: string) {
     if (!bookButtonURL) {
         console.error('No book button URL provided')
         return
@@ -200,6 +198,7 @@ function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
     posthog.capture(config.shownUserInterviewPopupEvent, {
         featureFlagName: featureFlagName,
     })
+
     const popupHTML = /*html*/ `
     <div class="popup" style="display: flex">
         <div class="userinterview-invitation">
@@ -224,37 +223,34 @@ function createPopUp(posthog, config, shadow, bookButtonURL, featureFlagName) {
 
     const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
 
-    // if popup-close-button then remove popup
-    shadow.addEventListener('click', (e) => {
-        // @ts-ignore
-        if (e.target.classList.contains('popup-close-button')) {
-            posthog.capture(config.dismissUserInterviewPopupEvent, {
-                $set: {
-                    [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
-                },
-                featureFlagName: featureFlagName,
-            })
-
-            shadow.innerHTML = ''
-            localStorage.setItem(sessionStorageName, 'true')
-            // @ts-ignore
-        } else if (e.target.classList.contains('popup-book-button')) {
-            posthog.capture(config.clickBookButtonEvent, {
-                $set: {
-                    [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
-                },
-                featureFlagName: featureFlagName,
-            })
-            shadow.innerHTML = ''
-            localStorage.setItem(sessionStorageName, 'true')
+    shadow.addEventListener('click', (e: MouseEvent) => {
+        let event
+        const targetElement = e.target as Element
+        if (targetElement.classList.contains('popup-close-button')) {
+            event = config.dismissUserInterviewPopupEvent
+        } else if (targetElement.classList.contains('popup-book-button')) {
+            event = config.clickBookButtonEvent
+        } else {
+            return
         }
 
-        // update the date that the last popup was shown
-        localStorage.setItem(user_interview_popup_shown, new Date().toISOString())
+        posthog.capture(event, {
+            $set: {
+                [`${config.userPropertyNameSeenUserInterview} - ${featureFlagName}`]: new Date().toISOString(),
+                [config.userPropertyNameSeenUserInterview]: new Date().toISOString(),
+            },
+            featureFlagName: featureFlagName,
+        })
+
+        shadow.innerHTML = ''
+        localStorage.setItem(sessionStorageName, 'true')
+
+        // update the date that the last interview popup was shown
+        localStorage.setItem(config.userPropertyNameSeenUserInterview, new Date().toISOString())
     })
 }
 
-export function inject({ config, posthog }) {
+export function inject({ config, posthog }: { config: Config; posthog: any }) {
     if (config.domains) {
         const domains = config.domains.split(',').map((domain) => domain.trim())
         if (domains.length > 0 && domains.indexOf(window.location.hostname) === -1) {
@@ -263,8 +259,8 @@ export function inject({ config, posthog }) {
     }
 
     const lastPopupLongEnoughAgo =
-        !localStorage.getItem(user_interview_popup_shown) ||
-        dateDiffFromToday(localStorage.getItem(user_interview_popup_shown)) >=
+        !localStorage.getItem(config.userPropertyNameSeenUserInterview) ||
+        dateDiffFromToday(localStorage.getItem(config.userPropertyNameSeenUserInterview)) >=
             parseInt(config.minDaysSinceLastSeenPopUp)
 
     if (!DEBUG_SKIP_LAST_SEEN && !lastPopupLongEnoughAgo) return
@@ -282,11 +278,7 @@ export function inject({ config, posthog }) {
             const flagStartsWithKeyword = flagName.startsWith(config.flagStartsWith)
             const flagEnabled = posthog.isFeatureEnabled(flagName)
             const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(flagName))
-            if (
-                flagStartsWithKeyword
-                && flagEnabled
-                && flagNotShownBefore
-            ) {
+            if (flagStartsWithKeyword && flagEnabled && flagNotShownBefore) {
                 const payload = posthog.getFeatureFlagPayload(flagName)
                 createPopUp(posthog, config, shadow, payload.bookingLink, flagName)
                 return
