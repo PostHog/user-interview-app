@@ -1,3 +1,7 @@
 {
-    "bookingLink": "https://calendly.com/{ORG NAME}/{EVENT NAME}"
+    "bookingLink": "https://calendly.com/posthog/chat-about-feature-flags",
+    "invitationTitle": "Help improve PostHog feature flags!",
+    "invitationBody": "div style='display: flex'><img style='width:auto; height:100px; margin:auto;' src='https://posthog.com/static/aac3a0aa994277081897311455a29850/8839d/vacation-hog.webp'></img><p style='padding-left: 10px'>You're invited to a 30-minute user interview.<br><br>Help guide our roadmap and get <strong>$50 of PostHog Merch.</strong></p></div>",
+    "closeButtonText": "Close",
+    "bookButtonText": "Book now"
 }
