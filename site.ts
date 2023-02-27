@@ -195,10 +195,10 @@ function createPopUp(
     shadow: ShadowRoot,
     bookButtonURL: string,
     featureFlagName: string,
-    flagInvitationTitle: string,
-    flagInvitationBody: string,
-    flagCloseButtonText: string,
-    flagBookButtonText: string
+    flagInvitationTitle?: string,
+    flagInvitationBody?: string,
+    flagCloseButtonText?: string,
+    flagBookButtonText?: string
 ) {
     if (!bookButtonURL) {
         console.error('No book button URL provided')
@@ -295,7 +295,17 @@ export function inject({ config, posthog }: { config: Config; posthog: any }) {
             const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(flagName))
             if (flagStartsWithKeyword && flagEnabled && flagNotShownBefore) {
                 const payload = posthog.getFeatureFlagPayload(flagName)
-                createPopUp(posthog, config, shadow, payload.bookingLink, flagName)
+                createPopUp(
+                    posthog,
+                    config,
+                    shadow,
+                    payload.bookingLink,
+                    flagName,
+                    payload?.invitationTitle,
+                    payload?.invitationBody,
+                    payload?.closeButtonText,
+                    payload?.bookButtonText
+                )
                 return
             }
         }
