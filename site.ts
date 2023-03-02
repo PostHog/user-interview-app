@@ -189,11 +189,26 @@ function dateDiffFromToday(date: string): number {
     return diffDays
 }
 
-function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButtonURL: string, featureFlagName: string) {
+function createPopUp(
+    posthog: any,
+    config: Config,
+    shadow: ShadowRoot,
+    bookButtonURL: string,
+    featureFlagName: string,
+    flagInvitationTitle?: string,
+    flagInvitationBody?: string,
+    flagCloseButtonText?: string,
+    flagBookButtonText?: string
+) {
     if (!bookButtonURL) {
         console.error('No book button URL provided')
         return
     }
+
+    const invitationTitle = flagInvitationTitle || config.invitationTitle
+    const invitationBody = flagInvitationBody || config.invitationBody
+    const closeButtonText = flagCloseButtonText || config.closeButtonText
+    const bookButtonText = flagBookButtonText || config.bookButtonText
 
     posthog.capture(config.shownUserInterviewPopupEvent, {
         featureFlagName: featureFlagName,
@@ -202,16 +217,16 @@ function createPopUp(posthog: any, config: Config, shadow: ShadowRoot, bookButto
     const popupHTML = /*html*/ `
     <div class="popup" style="display: flex">
         <div class="userinterview-invitation">
-            <h2 class="invitation-title">${config.invitationTitle}</h2>
-            <div class="invitation-body">${config.invitationBody}</p>
+            <h2 class="invitation-title">${invitationTitle}</h2>
+            <div class="invitation-body">${invitationBody}</p>
         </div>
         <div class="bottom-section">
             <div class="buttons">
                 <button class="popup-close-button" type="button">
-                    ${config.closeButtonText}
+                    ${closeButtonText}
                 </button>
                 <button class="popup-book-button" onclick="window.open('${bookButtonURL}')">
-                    ${config.bookButtonText}
+                    ${bookButtonText}
                 </button>
             </div>
         </div>
@@ -280,7 +295,17 @@ export function inject({ config, posthog }: { config: Config; posthog: any }) {
             const flagNotShownBefore = !localStorage.getItem(getFeatureSessionStorageKey(flagName))
             if (flagStartsWithKeyword && flagEnabled && flagNotShownBefore) {
                 const payload = posthog.getFeatureFlagPayload(flagName)
-                createPopUp(posthog, config, shadow, payload.bookingLink, flagName)
+                createPopUp(
+                    posthog,
+                    config,
+                    shadow,
+                    payload.bookingLink,
+                    flagName,
+                    payload?.invitationTitle,
+                    payload?.invitationBody,
+                    payload?.closeButtonText,
+                    payload?.bookButtonText
+                )
                 return
             }
         }
