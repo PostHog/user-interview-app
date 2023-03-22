@@ -96,7 +96,7 @@
         },
         {
             "key": "zIndex",
-            "name": "z-index of the form and the button",
+            "name": "z-index of the popup (default to 999999)",
             "type": "string",
             "default": 999999,
             "required": true,
