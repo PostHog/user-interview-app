@@ -93,6 +93,14 @@
             "default": "interview-",
             "required": true,
             "site": true
+        },
+        {
+            "key": "zIndex",
+            "name": "z-index of the form and the button",
+            "type": "string",
+            "default": 99999,
+            "required": true,
+            "site": true
         }
     ]
 }
