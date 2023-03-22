@@ -20,7 +20,7 @@ type Config = {
     flagStartsWith: string
 }
 
-const style = /* css */ `
+const style = (config) => /* css */ `
         .popup,
         .button,
         .thanks {
@@ -32,7 +32,7 @@ const style = /* css */ `
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif,
                 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
             text-align: left;
-            z-index: 999999;
+            z-index: ${parseInt(config.zIndex) || 99999};
         }
         .button {
             width: 64px;
@@ -165,12 +165,12 @@ const style = /* css */ `
         }
 `
 
-function createShadowDOM(style: string): ShadowRoot {
+function createShadowDOM(styleSheet: string): ShadowRoot {
     const div = document.createElement('div')
     const shadow = div.attachShadow({ mode: 'open' })
-    if (style) {
+    if (styleSheet) {
         const styleElement = Object.assign(document.createElement('style'), {
-            innerText: style,
+            innerText: styleSheet,
         })
         shadow.appendChild(styleElement)
     }
@@ -280,7 +280,7 @@ export function inject({ config, posthog }: { config: Config; posthog: any }) {
 
     if (!DEBUG_SKIP_LAST_SEEN && !lastPopupLongEnoughAgo) return
 
-    const shadow = createShadowDOM(style)
+    const shadow = createShadowDOM(style(config))
 
     // if DEBUG_SKIP_FEATURE_FLAG then show the popup for the first feature flag
     if (DEBUG_SKIP_FEATURE_FLAG) {
