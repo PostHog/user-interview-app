@@ -236,6 +236,8 @@ function createPopUp(
     })
     shadow.appendChild(popup)
 
+    window.dispatchEvent(new Event('PHUserInterviewBoxOpened'))
+
     const sessionStorageName = getFeatureSessionStorageKey(featureFlagName)
 
     shadow.addEventListener('click', (e: MouseEvent) => {
@@ -258,6 +260,7 @@ function createPopUp(
         })
 
         shadow.innerHTML = ''
+        window.dispatchEvent(new Event('PHUserInterviewBoxClosed'))
         localStorage.setItem(sessionStorageName, 'true')
 
         // update the date that the last interview popup was shown
