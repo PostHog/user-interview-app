@@ -10,6 +10,8 @@ type Config = {
     invitationTitle: string
     invitationBody: string
     bookButtonText: string
+    bookButtonColor: string
+    bookButtonBackground: string
     closeButtonText: string
     footerHTML: string
     shownUserInterviewPopupEvent: string
@@ -209,6 +211,8 @@ function createPopUp(
     const invitationBody = flagInvitationBody || config.invitationBody
     const closeButtonText = flagCloseButtonText || config.closeButtonText
     const bookButtonText = flagBookButtonText || config.bookButtonText
+    const bookButtonColor = config.bookButtonColor || 'white'
+    const bookButtonBackground = config.bookButtonBackground || '#1d8db9'
 
     posthog.capture(config.shownUserInterviewPopupEvent, {
         featureFlagName: featureFlagName,
@@ -225,7 +229,7 @@ function createPopUp(
                 <button class="popup-close-button" type="button">
                     ${closeButtonText}
                 </button>
-                <button class="popup-book-button" onclick="window.open('${bookButtonURL}')">
+                <button class="popup-book-button" onclick="window.open('${bookButtonURL}')" style="color: ${bookButtonColor}; background: ${bookButtonBackground};">
                     ${bookButtonText}
                 </button>
             </div>

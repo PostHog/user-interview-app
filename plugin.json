@@ -35,6 +35,20 @@
             "site": true
         },
         {
+            "key": "bookButtonBackground",
+            "name": "Button background",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
+            "key": "bookButtonColor",
+            "name": "Button text color",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
             "key": "closeButtonText",
             "name": "Close button text (default)",
             "type": "string",
