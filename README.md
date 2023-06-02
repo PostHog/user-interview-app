@@ -9,6 +9,22 @@ Invite your users to an interview through an in-app pop-up with this app.
 3. Customize the text and theme using the app config
 4. Create a feature flag starting with `interview-` with the booking link as a payload and the appropriate filters set [instructions here](https://posthog.com/docs/apps/user-interview)
 
+### Handling overlapping widgets
+
+If there are other widgets in the bottom right hand corner:
+
+-   For when the widget opens:
+    -   Add an event listener to the window that hides the other widgets e.g. `PHUserInterviewBoxOpened` and show it again with the `PHUserInterviewBoxClosed` event. For example:
+
+        ```
+        window.addEventListener('PHUserInterviewBoxOpened', function (e) {
+        window.OtherWidget.hide();
+        });
+
+        window.addEventListener('PHUserInterviewBoxClosed', function (e) {
+        window.OtherWidget.show();
+        });
+
 ## Demo
 
 ![Example popup](example.png)
